@@ -24,9 +24,28 @@ from async_timeout import timeout
 from functools import partial
 from youtube_dl import YoutubeDL
 import youtube_dl
+import spotipy
+
+# Read from config file
+configFile = 'config.ini'
+
+config = configparser.ConfigParser()
+config.read(configFile)
+
+botApiToken = config['DISCORD']['BotApiToken']
+spotifyClientId = config['SPOTIFY']['ClientId']
+spotifyClientSecret = config['SPOTIFY']['ClientSecret']
+
+# set up spotify connection
+def connectToSpotify():
+    credentials = spotipy.oauth2.SpotifyClientCredentials(
+        client_id=spotifyClientId,
+        client_secret=spotifyClientSecret
+    )
+    return spotipy.Spotify(client_credentials_manager=credentials)
+
 
 youtube_dl.utils.bug_reports_message = lambda: ''
-
 
 ytdlopts = {
     'format': 'bestaudio/best',
@@ -90,13 +109,14 @@ class YTDLSource(discord.PCMVolumeTransformer):
         results = []
 
         if 'entries' in data:
-            for entry in data['entries']:
-                results.append({'webpage_url': entry['webpage_url'], 'requester': ctx.author, 'title': entry['title']})
-            await ctx.send(f'```ini\n[Added {len(results)} songs to the Queue.]\n```', delete_after=15)
-        else:
-            results.append({'webpage_url': data['webpage_url'], 'requester': ctx.author, 'title': data['title']})
-            await ctx.send(f'```ini\n[Added {data["title"]} to the Queue.]\n```', delete_after=15)
-
+            if data['extractor'] == 'youtube:search':
+                data = data['entries'][0]
+            else:
+                for entry in data['entries']:
+                    results.append({'webpage_url': entry['webpage_url'], 'requester': ctx.author, 'title': entry['title']})
+                return results
+        
+        results.append({'webpage_url': data['webpage_url'], 'requester': ctx.author, 'title': data['title']})
         return results
 
     @classmethod
@@ -119,13 +139,14 @@ class MusicPlayer:
     When the bot disconnects from the Voice it's instance will be destroyed.
     """
 
-    __slots__ = ('bot', '_guild', '_channel', '_cog', 'queue', 'next', 'current', 'np', 'volume')
+    __slots__ = ('bot', '_guild', '_channel', '_cog', 'queue', 'next', 'current', 'np', 'volume', 'sp')
 
     def __init__(self, ctx):
         self.bot = ctx.bot
         self._guild = ctx.guild
         self._channel = ctx.channel
         self._cog = ctx.cog
+        self.sp = connectToSpotify()
 
         self.queue = asyncio.Queue()
         self.next = asyncio.Event()
@@ -285,12 +306,49 @@ class Music(commands.Cog):
 
         player = self.get_player(ctx)
 
-        # If download is False, source will be a dict which will be used later to regather the stream.
-        # If download is True, source will be a discord.FFmpegPCMAudio with a VolumeTransformer.
         sources = await YTDLSource.create_source(ctx, search, loop=self.bot.loop)
 
         for source in sources:
             await player.queue.put(source)
+        if len(sources) > 1:
+            await ctx.send(f'```ini\n[Added {len(sources)} songs to the Queue.]\n```', delete_after=15)
+        else:
+            title = sources[0]['title']
+            await ctx.send(f'```ini\n[Added {title} to the Queue.]\n```', delete_after=15)
+
+    @commands.command(name='spotify', aliases=['sp'])
+    async def spotify_(self, ctx, *, search: str):
+        await ctx.trigger_typing()
+        
+        vc = ctx.voice_client
+
+        if not vc:
+            await ctx.invoke(self.connect_)
+
+        # verify link is probably a spotify link
+        if search == "" or "spotify" not in search:
+            return await ctx.send('That doesn\'t look like a Spotify link. '
+                           'Please request a valid spotify song or playlist')
+            
+        player = self.get_player(ctx)
+
+        if 'playlist' in search:
+            playlist = player.sp.playlist(search)
+            for song in playlist['tracks']['items']:
+                lookup = song['track']['name'] + " by " + song['track']['artists'][0]['name']
+                sources = await YTDLSource.create_source(ctx, lookup, loop=self.bot.loop)
+                await player.queue.put(sources[0])
+            lenList = playlist['tracks']['total']
+            await ctx.send(f'Added {lenList} tracks to the queue', delete_after=15)
+        else:
+            song = player.sp.track(search)
+            lookup = song['name'] + " by " + song['artists'][0]['name']
+            sources = await YTDLSource.create_source(ctx, lookup, loop=self.bot.loop)
+            await player.queue.put(sources[0])
+            title = sources[0]['title']
+            await ctx.send(f'```ini\n[Added {title} to the Queue.]\n```', delete_after=15)
+        
+
 
     @commands.command(name='pause')
     async def pause_(self, ctx):
@@ -413,14 +471,6 @@ class Music(commands.Cog):
         await self.cleanup(ctx.guild)
 
 bot = commands.Bot(command_prefix=commands.when_mentioned_or("!"), description='Relatively simple music bot example')
-
-configFile = 'config.ini'
-
-config = configparser.ConfigParser()
-config.read(configFile)
-
-botApiToken = config['MIKEY']['BotApiToken']
-print(botApiToken)
 
 @bot.event
 async def on_ready():

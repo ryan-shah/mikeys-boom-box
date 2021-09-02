@@ -8,7 +8,7 @@
             "name": "Python: mikey.py",
             "type": "python",
             "request": "launch",
-            "program": "mikey.py",
+            "program": "mikey/mikey.py",
             "console": "integratedTerminal"
         }
     ]

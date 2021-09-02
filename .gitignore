@@ -2,3 +2,4 @@
 config.ini
 *.Identifier
 .cache
+__pycache__/

@@ -3,3 +3,5 @@ PyNaCl
 youtube-dl
 discord.py[voice]
 spotipy
+flake8
+black

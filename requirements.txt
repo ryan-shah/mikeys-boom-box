@@ -1,3 +1,5 @@
 discord.py
 PyNaCl
 youtube-dl
+discord.py[voice]
+spotipy

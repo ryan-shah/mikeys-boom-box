@@ -6,6 +6,7 @@ import sys
 import traceback
 from YTDLSource import YTDLSource
 from MusicPlayer import MusicPlayer
+from constants import MESSAGE_TIMEOUT
 
 
 class VoiceConnectionError(commands.CommandError):
@@ -107,9 +108,9 @@ class Music(commands.Cog):
                     f"Connecting to channel: <{channel}> timed out."
                 )
 
-        await ctx.send(f"Connected to: **{channel}**", delete_after=20)
+        await ctx.send(f"Connected to: **{channel}**", delete_after=MESSAGE_TIMEOUT)
 
-    @commands.command(name="play", aliases=["sing"])
+    @commands.command(name="play", aliases=["sing", "p"])
     async def play_(self, ctx, *, search: str):
         """Request a song and add it to the queue.
         This command attempts to join a valid voice channel if the bot is not already in one.
@@ -126,6 +127,13 @@ class Music(commands.Cog):
         if not vc:
             await ctx.invoke(self.connect_)
 
+        # check if is a spotify link
+        if "spotify" in search:
+            await self.playSpotify(ctx, search)
+        else:
+            await self.playYTDL(ctx, search)
+
+    async def playYTDL(self, ctx, search: str):
         player = self.get_player(ctx)
 
         sources = await YTDLSource.create_source(ctx, search, loop=self.bot.loop)
@@ -140,25 +148,11 @@ class Music(commands.Cog):
         else:
             title = sources[0]["title"]
             await ctx.send(
-                f"```ini\n[Added {title} to the Queue.]\n```", delete_after=15
+                f"```ini\n[Added {title} to the Queue.]\n```",
+                delete_after=MESSAGE_TIMEOUT,
             )
 
-    @commands.command(name="spotify", aliases=["sp"])
-    async def spotify_(self, ctx, *, search: str):
-        await ctx.trigger_typing()
-
-        vc = ctx.voice_client
-
-        if not vc:
-            await ctx.invoke(self.connect_)
-
-        # verify link is probably a spotify link
-        if search == "" or "spotify" not in search:
-            return await ctx.send(
-                "That doesn't look like a Spotify link. "
-                "Please request a valid spotify song or playlist"
-            )
-
+    async def playSpotify(self, ctx, search: str):
         player = self.get_player(ctx)
 
         if "playlist" in search:
@@ -172,7 +166,9 @@ class Music(commands.Cog):
                 )
                 await player.queue.put(sources[0])
             lenList = playlist["tracks"]["total"]
-            await ctx.send(f"Added {lenList} tracks to the queue", delete_after=15)
+            await ctx.send(
+                f"Added {lenList} tracks to the queue", delete_after=MESSAGE_TIMEOUT
+            )
         else:
             song = player.sp.track(search)
             lookup = song["name"] + " by " + song["artists"][0]["name"]
@@ -180,7 +176,8 @@ class Music(commands.Cog):
             await player.queue.put(sources[0])
             title = sources[0]["title"]
             await ctx.send(
-                f"```ini\n[Added {title} to the Queue.]\n```", delete_after=15
+                f"```ini\n[Added {title} to the Queue.]\n```",
+                delete_after=MESSAGE_TIMEOUT,
             )
 
     @commands.command(name="pause")
@@ -190,7 +187,7 @@ class Music(commands.Cog):
 
         if not vc or not vc.is_playing():
             return await ctx.send(
-                "I am not currently playing anything!", delete_after=20
+                "I am not currently playing anything!", delete_after=MESSAGE_TIMEOUT
             )
         elif vc.is_paused():
             return
@@ -205,7 +202,7 @@ class Music(commands.Cog):
 
         if not vc or not vc.is_connected():
             return await ctx.send(
-                "I am not currently playing anything!", delete_after=20
+                "I am not currently playing anything!", delete_after=MESSAGE_TIMEOUT
             )
         elif not vc.is_paused():
             return
@@ -220,7 +217,7 @@ class Music(commands.Cog):
 
         if not vc or not vc.is_connected():
             return await ctx.send(
-                "I am not currently playing anything!", delete_after=20
+                "I am not currently playing anything!", delete_after=MESSAGE_TIMEOUT
             )
 
         if vc.is_paused():
@@ -238,7 +235,7 @@ class Music(commands.Cog):
 
         if not vc or not vc.is_connected():
             return await ctx.send(
-                "I am not currently connected to voice!", delete_after=20
+                "I am not currently connected to voice!", delete_after=MESSAGE_TIMEOUT
             )
 
         player = self.get_player(ctx)
@@ -262,7 +259,7 @@ class Music(commands.Cog):
 
         if not vc or not vc.is_connected():
             return await ctx.send(
-                "I am not currently connected to voice!", delete_after=20
+                "I am not currently connected to voice!", delete_after=MESSAGE_TIMEOUT
             )
 
         player = self.get_player(ctx)
@@ -292,7 +289,7 @@ class Music(commands.Cog):
 
         if not vc or not vc.is_connected():
             return await ctx.send(
-                "I am not currently connected to voice!", delete_after=20
+                "I am not currently connected to voice!", delete_after=MESSAGE_TIMEOUT
             )
 
         if not 0 < vol < 101:
@@ -316,7 +313,20 @@ class Music(commands.Cog):
 
         if not vc or not vc.is_connected():
             return await ctx.send(
-                "I am not currently playing anything!", delete_after=20
+                "I am not currently playing anything!", delete_after=MESSAGE_TIMEOUT
             )
 
         await self.cleanup(ctx.guild)
+
+    @commands.command(name="shuffle")
+    async def shuffle_(self, ctx):
+        vc = ctx.voice_client
+
+        if not vc or not vc.is_connected():
+            return await ctx.send(
+                "I am not currently playing anything!", delete_after=MESSAGE_TIMEOUT
+            )
+        player = self.get_player(ctx)
+        player.shuffle()
+        await ctx.send("Queue has been shuffled!", delete_after=MESSAGE_TIMEOUT)
+        await ctx.invoke(self.queue_info)

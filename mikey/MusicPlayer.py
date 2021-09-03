@@ -3,6 +3,7 @@ import asyncio
 from async_timeout import timeout
 from YTDLSource import YTDLSource
 import discord
+from random import shuffle
 
 
 class MusicPlayer:
@@ -95,3 +96,6 @@ class MusicPlayer:
     def destroy(self, guild):
         """Disconnect and cleanup the player."""
         return self.bot.loop.create_task(self._cog.cleanup(guild))
+
+    def shuffle(self):
+        shuffle(self.queue._queue)

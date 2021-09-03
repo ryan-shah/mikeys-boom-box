@@ -4,6 +4,8 @@ import asyncio
 import itertools
 import sys
 import traceback
+
+from discord.ext.commands import bot
 from YTDLSource import YTDLSource
 from MusicPlayer import MusicPlayer
 from constants import MESSAGE_TIMEOUT
@@ -118,7 +120,12 @@ class Music(commands.Cog):
         Parameters
         ------------
         search: str [Required]
-            The song to search and retrieve using YTDL. This could be a simple search, an ID or URL.
+            The song to search and retrieve using YTDL. This can be one of the following options
+            - A search term
+            - A link to a youtube video
+            - A link to a youtube playlist
+            - A link to a spotify song
+            - A link to a spotify playlist
         """
         await ctx.trigger_typing()
 
@@ -320,6 +327,8 @@ class Music(commands.Cog):
 
     @commands.command(name="shuffle")
     async def shuffle_(self, ctx):
+        """Shuffle the music in the queue
+        """
         vc = ctx.voice_client
 
         if not vc or not vc.is_connected():

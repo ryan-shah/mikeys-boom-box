@@ -11,8 +11,6 @@ mikey = commands.Bot(
 @mikey.event
 async def on_ready():
     print("We have logged in as {0}".format(mikey.user.name))
-    cog = mikey.get_cog("Music")
-    print([c.qualified_name for c in cog.walk_commands()])
 
 
 mikey.add_cog(Music(mikey))

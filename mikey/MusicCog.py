@@ -339,3 +339,16 @@ class Music(commands.Cog):
         player.shuffle()
         await ctx.send("Queue has been shuffled!", delete_after=MESSAGE_TIMEOUT)
         await ctx.invoke(self.queue_info)
+
+    @commands.command(name="trae")
+    async def trae_(self, ctx):
+        """Reacts to one of Trae's jokes
+        """
+        await ctx.trigger_typing()
+
+        vc = ctx.voice_client
+
+        if not vc:
+            await ctx.invoke(self.connect_)
+
+        return await self.playYTDL(ctx, "https://www.youtube.com/watch?v=iYVO5bUFww0")

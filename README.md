@@ -3,6 +3,24 @@ A pretty basic discord music bot
 
 Plays songs from a youtube/spotify video/song or playlist.
 
+## Prerequisites
+You will need python3 and pip3 to run this project.
+
+Linux install: `$ sudo apt-get install python3 python3-pip`
+
+Windows/Mac install: See instructions [here](https://www.python.org/)
+
+## Running Locally
+1. Follow the steps [here](https://www.freecodecamp.org/news/create-a-discord-bot-with-python/) to create a discord bot account and add it to your server.
+    - Make sure the bot has permissions to send/read messages as well as connect to and speak in voice channels
+    - Make sure you note down your bot's token
+2. Go to the [Spotify Devloper Portal](https://developer.spotify.com/dashboard/) and create a new app.
+    - Make sure you note down your Client ID and Client Secret
+3. Create a `config.ini` file in the same format as the provided `example.ini` file in this project.
+    - Make sure you update the sections with the tokens you noted for discord and spotify.
+4. Install dependencies with `pip3 install -r requirements.txt`
+5. Run the bot with `python3 mikey/mikey.py`
+
 ## Commands
 ```
 Mikey's Magical Boombox

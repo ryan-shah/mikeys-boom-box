@@ -5,7 +5,6 @@ import itertools
 import sys
 import traceback
 
-from discord.ext.commands import bot
 from YTDLSource import YTDLSource
 from MusicPlayer import MusicPlayer
 from constants import MESSAGE_TIMEOUT
@@ -327,8 +326,7 @@ class Music(commands.Cog):
 
     @commands.command(name="shuffle")
     async def shuffle_(self, ctx):
-        """Shuffle the music in the queue
-        """
+        """Shuffle the music in the queue"""
         vc = ctx.voice_client
 
         if not vc or not vc.is_connected():
@@ -342,8 +340,7 @@ class Music(commands.Cog):
 
     @commands.command(name="trae")
     async def trae_(self, ctx):
-        """Reacts to one of Trae's jokes
-        """
+        """Reacts to one of Trae's jokes"""
         await ctx.trigger_typing()
 
         vc = ctx.voice_client

@@ -1,7 +1,7 @@
 from discord.ext import commands
 from MusicCog import Music
 from constants import DISCORD_API_TOKEN
-from dad import dadJoke
+from DadCog import Dad
 
 mikey = commands.Bot(
     command_prefix=commands.when_mentioned_or("!"),
@@ -13,11 +13,6 @@ mikey = commands.Bot(
 async def on_ready():
     print("We have logged in as {0}".format(mikey.user.name))
 
-
-@mikey.event
-async def on_message(message):
-    response = dadJoke(message)
-    await message.reply(response)
-
 mikey.add_cog(Music(mikey))
+mikey.add_cog(Dad(mikey))
 mikey.run(DISCORD_API_TOKEN)

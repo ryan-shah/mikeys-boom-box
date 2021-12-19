@@ -3,6 +3,8 @@ A pretty basic discord music bot
 
 Plays songs from a youtube/spotify video/song or playlist.
 
+Be warned, Mikey is a father and thinks he's funny.
+
 ## Prerequisites
 You will need python3 and pip3 to run this project.
 

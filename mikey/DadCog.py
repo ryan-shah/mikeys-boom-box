@@ -1,6 +1,10 @@
 from discord.ext import commands
 
 class Dad(commands.Cog):
+
+    # https://www.cl.cam.ac.uk/~mgk25/ucs/quotes.html
+    SINGLE_QUOTES = ["\u0027", "\u0060", "\u00B4", "\u2018", "\u2019"]
+
     def __init__(self, bot):
         self.bot = bot
 
@@ -27,7 +31,7 @@ def getNewName(search, msg):
     return msg[start:end]
         
 def dadJoke(message):
-    triggers = ["i'm ", "i am ", " im "]
+    triggers = [f"i{single_quote}m " for single_quote in Dad.SINGLE_QUOTES] + ["i am ", " im "]
     for word in triggers:
         if word in message.content.lower():
             name = getNewName(word, message.content)

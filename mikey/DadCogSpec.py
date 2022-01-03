@@ -31,5 +31,23 @@ class TestDadCogMethods(unittest.TestCase):
             with self.subTest(mock_message=mock_message.content):
                 self.assertEqual(DadCog.dadJoke(mock_message), expected_string)
 
+    def test_punction(self):
+        test_user = "test"
+
+        punct = [".", "?", "!", ","]
+        
+        test_strings = [f"I'm hungry{char}" for char in punct]
+        
+        advanced_test = "I'm hungry, thirsty, and tired!"
+        test_strings.append(advanced_test)
+
+        expected_string = f"Hi hungry, I thought you were <@{test_user}>."
+
+        mock_messages = [MockMessage(MockMessageAuthor(test_user), test_string) for test_string in test_strings]
+
+        for mock_message in mock_messages:
+            with self.subTest(mock_message=mock_message.content):
+                self.assertEqual(DadCog.dadJoke(mock_message), expected_string)
+
 if __name__ == '__main__':
     unittest.main()

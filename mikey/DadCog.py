@@ -18,16 +18,16 @@ class Dad(commands.Cog):
         await message.reply(response)
 
 def getNewName(search, msg):
+    punct = ['.', '!', '?', ',']
+
     start = msg.lower().index(search) + len(search)
     end = len(msg)
-    if '.' in msg:
-        idx = msg.index('.')
-        if idx > start:
-            end = idx
-    if ',' in msg:
-        idx = msg.index('.')
-        if idx > start and idx < end:
-            end = idx
+
+    for char in punct:
+        if char in msg:
+            idx = msg.index(char)
+            if idx > start and idx < end:
+                end = idx
     return msg[start:end]
         
 def dadJoke(message):

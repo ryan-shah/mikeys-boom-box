@@ -36,9 +36,11 @@ class TestDadCogMethods(unittest.TestCase):
 
         punct = [".", "?", "!", ","]
         
-        test_strings = [f"I'm hungry{char}" for char in punct]
-        
+        base_test = "I'm hungry"
         advanced_test = "I'm hungry, thirsty, and tired!"
+        
+        test_strings = [f"I'm hungry{char}" for char in punct]
+        test_strings.append(base_test)
         test_strings.append(advanced_test)
 
         expected_string = f"Hi hungry, I thought you were <@{test_user}>."

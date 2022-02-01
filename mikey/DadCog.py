@@ -1,5 +1,6 @@
 from discord.ext import commands
 
+
 class Dad(commands.Cog):
 
     # https://www.cl.cam.ac.uk/~mgk25/ucs/quotes.html
@@ -17,11 +18,13 @@ class Dad(commands.Cog):
             return
         await message.reply(response)
 
-def getNewName(search, msg):
-    punct = ['.', '!', '?', ',']
 
-    start = msg.lower().index(search) + len(search)
+def getNewName(search, msg):
+    punct = [".", "!", "?", ","]
+
+    msg = msg[msg.lower().index(search) + len(search) :]
     end = len(msg)
+    start = 0
 
     for char in punct:
         if char in msg:
@@ -29,12 +32,18 @@ def getNewName(search, msg):
             if idx > start and idx < end:
                 end = idx
     return msg[start:end]
-        
+
+
 def dadJoke(message):
-    triggers = [f"i{single_quote}m " for single_quote in Dad.SINGLE_QUOTES] + ["i am ", " im "]
+    triggers = [f"i{single_quote}m " for single_quote in Dad.SINGLE_QUOTES] + [
+        "i am ",
+        " im ",
+    ]
     for word in triggers:
         if word in message.content.lower():
             name = getNewName(word, message.content)
-            response = "Hi " + name + ", I thought you were <@" + str(message.author.id) + ">."
+            response = (
+                "Hi " + name + ", I thought you were <@" + str(message.author.id) + ">."
+            )
             return response
     return ""

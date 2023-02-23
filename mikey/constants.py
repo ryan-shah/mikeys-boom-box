@@ -11,5 +11,3 @@ DISCORD_API_TOKEN = config["DISCORD"]["BotApiToken"]
 SPOTIFY_CLIENT_ID = config["SPOTIFY"]["ClientId"]
 SPOTIFY_CLIENT_SECRET = config["SPOTIFY"]["ClientSecret"]
 MESSAGE_TIMEOUT = int(config["MIKEY"]["MessageTimeout"])
-GOOGLE_CLIENT_ID = config["GOOGLE"]["ClientId"]
-GOOGLE_CLIENT_SECRET = config["GOOGLE"]["ClientSecret"]

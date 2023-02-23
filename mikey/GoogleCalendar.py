@@ -1,5 +1,6 @@
 from constants import calendarFile
 from datetime import datetime, timedelta
+import base64
 import csv
 import os.path
 from google.auth.transport.requests import Request
@@ -10,26 +11,41 @@ from googleapiclient.errors import HttpError
 
 SCOPES = ['https://www.googleapis.com/auth/calendar']
 
+""" 
+{
+    guildId: [{
+        id: calendarId,
+        name: name
+    }]
+}
+"""
 CALENDARS = {}
 def load_calendars():
+    if not os.path.exists(calendarFile):
+        return
     with open(calendarFile, "r+") as f:
         reader = csv.reader(f)
         for row in reader:
             guild = row[0]
             calendar = row[1]
+            name = row[2]
+            c = {
+                "id": calendar,
+                "name": name
+            }
             if guild in CALENDARS.keys():
-                CALENDARS[guild].append(calendar)
+                CALENDARS[guild].append(c)
             else:
-                CALENDARS[guild] = [calendar]
+                CALENDARS[guild] = [c]
 
 def save_calendars():
     with open(calendarFile, "w+") as f:
         writer = csv.writer(f)
         for key in CALENDARS.keys():
             for calendar in CALENDARS[key]:
-                writer.writerow([key, calendar])
+                writer.writerow([key, calendar["id"], calendar["name"]])
 
-class Calendar():
+class GCalendar():
     """
     A class representing the calendar for each guild.
     """
@@ -45,15 +61,33 @@ class Calendar():
         else:
             self.calendars = []
 
-    def register_calendar(self, calendar):
+    def get_calendar_details(self, url):
+        service = build('calendar', 'v3', credentials=self.creds)
+        try:
+            c = service.calendars().get(calendarId=url).execute()
+            return c
+        except HttpError as error:
+            print('An error occurred: %s' % error)
+
+    def register_calendar(self, url):
+        calendar = {"id": url, "name": self.get_calendar_details(url)['summary']}
         self.calendars.append(calendar)
-        if self._guild in CALENDARS.keys():
-            CALENDARS[self._guild] = list(set(CALENDARS[self._guild] + self.calendars))
-        else:
-            CALENDARS[self._guild] = [calendar]
+        CALENDARS[self._guild] = self.calendars
 
         save_calendars()
         self.fetch_calendars()
+
+    def remove_calendar(self, name):
+        cal = None
+        for i in range(len(self.calendars)):
+            calendar = self.calendars[i]
+            if calendar['name'] == name:
+                cal = self.calendars.pop(i)
+                break
+        
+        save_calendars()
+        self.fetch_calendars
+        return cal
 
     def get_calendars(self):
         return self.calendars
@@ -102,7 +136,7 @@ class Calendar():
             service = build('calendar', 'v3', credentials=self.creds)
             for calendar in self.calendars:
                 try:
-                    event = service.events().insert(calendarId=calendar, body=data).execute()
+                    event = service.events().insert(calendarId=calendar["id"], body=data).execute()
                     print(f"Event Created: {event.get('htmlLink')}")
                 except HttpError as error:
                     print('An error occurred: %s' % error)
@@ -128,12 +162,12 @@ class Calendar():
     def modify_event(self, old, new):
         event_id = old.id
         for calendar in self.calendars:
-            gCalId = self.get_matching_event(calendar, event_id)
+            gCalId = self.get_matching_event(calendar["id"], event_id)
             if gCalId is not None:
                 service = build('calendar', 'v3', credentials=self.creds)
                 try:
                     event = service.events().patch(
-                        calendarId=calendar,
+                        calendarId=calendar["id"],
                         eventId=gCalId,
                         body=self.parse_event(new)
                     ).execute()
@@ -144,14 +178,46 @@ class Calendar():
     def delete_event(self, event):
         event_id = event.id
         for calendar in self.calendars:
-            gCalId = self.get_matching_event(calendar, event_id)
+            gCalId = self.get_matching_event(calendar["id"], event_id)
             if gCalId is not None:
                 service = build('calendar', 'v3', credentials=self.creds)
                 try:
                     service.events().delete(
-                        calendarId=calendar,
+                        calendarId=calendar["id"],
                         eventId=gCalId
                     ).execute()
                     print(f"Event Deleted.")
                 except HttpError as error:
                     print('An error occurred: %s' % error)
+
+    def list_calendars(self):
+        results = []
+        for c in self.calendars:
+            details = {
+                'name': c['name'],
+                'url': self.get_shareable_url(c['id'])
+            }
+            results.append(details)
+        return results
+
+    def create_calendar(self, name):
+        service = build('calendar', 'v3', credentials=self.creds)
+        cal = None
+        try:
+            cal = service.calendars().insert(
+                body = {
+                    'summary': name,
+                    'timeZone': 'America/New_York'
+                }
+            ).execute()
+            print(f"Calendar Created.")
+        except HttpError as error:
+            print('An error occurred: %s' % error)
+
+        if cal:
+            print(cal)
+            self.register_calendar(cal['id'])
+
+    def get_shareable_url(self, url):
+        cid = base64.b64encode(url.encode('utf-8')).decode().rstrip('=')
+        return f"https://calendar.google.com/calendar?cid={cid}"

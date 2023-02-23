@@ -1,8 +1,8 @@
 import discord
 import asyncio
 from functools import partial
-from youtube_dl import YoutubeDL
-import youtube_dl
+from yt_dlp import YoutubeDL
+import yt_dlp
 
 
 ytdlopts = {
@@ -19,7 +19,7 @@ ytdlopts = {
     "source_address": "0.0.0.0",  # ipv6 addresses cause issues sometimes
 }
 ytdl = YoutubeDL(ytdlopts)
-youtube_dl.utils.bug_reports_message = lambda: ""
+yt_dlp.utils.bug_reports_message = lambda: ""
 
 
 class YTDLSource(discord.PCMVolumeTransformer):

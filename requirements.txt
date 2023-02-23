@@ -1,7 +1,10 @@
-discord.py
+discord.py == 2.0
 PyNaCl
-youtube-dl
+yt-dlp
 discord.py[voice]
 spotipy
 flake8
 black
+google-api-python-client
+google-auth-httplib2
+google-auth-oauthlib

@@ -1,4 +1,4 @@
-discord.py
+discord.py >= 2.0.0
 PyNaCl
 youtube-dl @ git+https://github.com/ytdl-org/youtube-dl.git
 discord.py[voice]

@@ -126,8 +126,7 @@ class Music(commands.Cog):
             - A link to a spotify song
             - A link to a spotify playlist
         """
-        await ctx.trigger_typing()
-
+        await ctx.typing()
         vc = ctx.voice_client
 
         if not vc:
@@ -341,7 +340,7 @@ class Music(commands.Cog):
     @commands.command(name="trae")
     async def trae_(self, ctx):
         """Reacts to one of Trae's jokes"""
-        await ctx.trigger_typing()
+        await ctx.typing()
 
         vc = ctx.voice_client
 

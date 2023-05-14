@@ -1,6 +1,6 @@
 discord.py
 PyNaCl
-youtube-dl
+youtube-dl @ git+https://github.com/ytdl-org/youtube-dl.git
 discord.py[voice]
 spotipy
 flake8

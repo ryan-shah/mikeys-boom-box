@@ -103,7 +103,7 @@ class Music(commands.Cog):
                 raise VoiceConnectionError(f"Moving to channel: <{channel}> timed out.")
         else:
             try:
-                await channel.connect(self_deaf=True)
+                await channel.connect()
             except asyncio.TimeoutError:
                 raise VoiceConnectionError(
                     f"Connecting to channel: <{channel}> timed out."
@@ -128,11 +128,10 @@ class Music(commands.Cog):
         """
         await ctx.typing()
         vc = ctx.voice_client
+
         if not vc:
-            try: 
-                await ctx.invoke(self.connect_)
-            except Exception as e:
-                return await ctx.send(f"Error: {e}")
+            await ctx.invoke(self.connect_)
+
         # check if is a spotify link
         if "spotify" in search:
             await self.playSpotify(ctx, search)
@@ -341,7 +340,7 @@ class Music(commands.Cog):
     @commands.command(name="trae")
     async def trae_(self, ctx):
         """Reacts to one of Trae's jokes"""
-        await ctx.trigger_typing()
+        await ctx.typing()
 
         vc = ctx.voice_client
 

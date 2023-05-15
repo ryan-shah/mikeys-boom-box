@@ -1,6 +1,6 @@
-discord.py == 2.0
+discord.py >= 2.0.0
 PyNaCl
-yt-dlp
+youtube-dl @ git+https://github.com/ytdl-org/youtube-dl.git
 discord.py[voice]
 spotipy
 flake8

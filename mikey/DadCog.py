@@ -2,7 +2,6 @@ from discord.ext import commands
 
 
 class Dad(commands.Cog):
-
     # https://www.cl.cam.ac.uk/~mgk25/ucs/quotes.html
     SINGLE_QUOTES = ["\u0027", "\u0060", "\u00B4", "\u2018", "\u2019"]
 

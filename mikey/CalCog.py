@@ -2,8 +2,8 @@ from discord.ext import commands
 from GoogleCalendar import GCalendar, load_calendars
 from exceptions import AuthenticationException
 
-class Calendar(commands.Cog):
 
+class Calendar(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         load_calendars()
@@ -21,14 +21,14 @@ class Calendar(commands.Cog):
                 if ctx:
                     await ctx.send(str(e))
                 return
-                       
+
         return calendar
 
     @commands.Cog.listener()
     async def on_scheduled_event_create(self, event):
         calendar = await self.get_calendar(event.guild.id)
         calendar.publish_event(event)
-        
+
     @commands.Cog.listener()
     async def on_scheduled_event_update(self, before, after):
         calendar = await self.get_calendar(before.guild.id)
@@ -50,8 +50,8 @@ class Calendar(commands.Cog):
         calendar = await self.get_calendar(ctx.guild.id, ctx)
         calendar.register_calendar(url)
         print(calendar.get_calendars())
-        
-    @commands.command(name='list', aliases=['ls', 'l'])
+
+    @commands.command(name="list", aliases=["ls", "l"])
     async def list_(self, ctx):
         """List Registered Calendars
         Parameters
@@ -64,7 +64,7 @@ class Calendar(commands.Cog):
             msg += f"{c['name']}: <{c['url']}>\n"
         await ctx.send(msg)
 
-    @commands.command(name='create', aliases=['c'])
+    @commands.command(name="create", aliases=["c"])
     async def create_(self, ctx):
         """Creates a new calendar for the server
         Parameters
@@ -73,10 +73,10 @@ class Calendar(commands.Cog):
         """
         calendar = await self.get_calendar(ctx.guild.id, ctx)
         calendar.create_calendar(ctx.guild.name)
-        await ctx.send('Calendar Created')
+        await ctx.send("Calendar Created")
         await ctx.invoke(self.list_)
 
-    @commands.command(name='remove', aliases=['rm'])
+    @commands.command(name="remove", aliases=["rm"])
     async def remove_(self, ctx, *, name):
         """Removes a calendar for the server
         Parameters
@@ -88,5 +88,5 @@ class Calendar(commands.Cog):
         if c:
             await ctx.send(f"Calendar Removed: {c['name']}")
         else:
-            await ctx.send(f"Unable to find calendar in server")
+            await ctx.send("Unable to find calendar in server")
         await ctx.invoke(self.list_)

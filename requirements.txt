@@ -5,3 +5,4 @@ discord.py[voice]
 spotipy
 flake8
 black
+requests

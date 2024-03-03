@@ -3,6 +3,7 @@ from discord import __version__, Intents
 from MusicCog import Music
 from constants import DISCORD_API_TOKEN
 from DadCog import Dad
+from TokCog import TikTok
 import asyncio
 
 intents = Intents.default()
@@ -24,6 +25,7 @@ async def on_ready():
 async def main():
     await mikey.add_cog(Music(mikey))
     await mikey.add_cog(Dad(mikey))
+    await mikey.add_cog(TikTok(mikey))
     await mikey.start(DISCORD_API_TOKEN)
 
 asyncio.run(main())

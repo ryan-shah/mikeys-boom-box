@@ -23,6 +23,11 @@ async def on_ready():
     print(__version__)
 
 async def main():
+    """    Add cogs and start the Discord bot.
+
+    This function adds different cogs to the Discord bot and then starts the bot using the provided API token.
+    """
+
     await mikey.add_cog(Music(mikey))
     await mikey.add_cog(Dad(mikey))
     await mikey.add_cog(TikTok(mikey))

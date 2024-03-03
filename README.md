@@ -3,6 +3,8 @@ A pretty basic discord music bot
 
 Plays songs from a youtube/spotify video/song or playlist.
 
+Also will upload files from tik tok links
+
 Be warned, Mikey is a father and thinks he's funny.
 
 ## Prerequisites
@@ -18,10 +20,11 @@ Windows/Mac install: See instructions [here](https://www.python.org/)
     - Make sure you note down your bot's token
 2. Go to the [Spotify Devloper Portal](https://developer.spotify.com/dashboard/) and create a new app.
     - Make sure you note down your Client ID and Client Secret
-3. Create a `config.ini` file in the same format as the provided `example.ini` file in this project.
+3. Create account for RapidAPI and get access to the [TikTok video api](https://rapidapi.com/yi005/api/tiktok-video-no-watermark2/)
+4. Create a `config.ini` file in the same format as the provided `example.ini` file in this project.
     - Make sure you update the sections with the tokens you noted for discord and spotify.
-4. Install dependencies with `pip3 install -r requirements.txt`
-5. Run the bot with `python3 mikey/mikey.py`
+5. Install dependencies with `pip3 install -r requirements.txt`
+6. Run the bot with `python3 mikey/mikey.py`
 
 ## Commands
 ```
@@ -51,3 +54,5 @@ You can also type !help category for more info on a category.
 - Uses the [Discord.py API](https://discordpy.readthedocs.io/en/stable/api.html)
 - Uses the [Spotipy API](https://spotipy.readthedocs.io/en/2.19.0/)
 - Uses the [youtube-dl library](https://github.com/ytdl-org/youtube-dl)
+- Uses RapidAPI [tiktok video api](https://rapidapi.com/yi005/api/tiktok-video-no-watermark2/)
+  - Logic based on this [npm implementation](https://github.com/davidkeipert/tikfav/blob/main/videoInfo.js#L5) posted by [u/Odd_Variation_9142](https://www.reddit.com/r/DataHoarder/comments/12c3me4/i_made_a_script_to_download_all_my_favorited/)

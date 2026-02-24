@@ -62,6 +62,55 @@ class TestDadCogMethods(unittest.TestCase):
                 result = DadCog.dadJoke(mock_message)
                 self.assertEqual(result, expected_string)
 
+    def test_im_variants(self):
+        test_user = "test"
+        test_strings = [
+            "I'm hungry",
+            "I am hungry",
+            "Im hungry",
+            "i'm hungry",
+            "i am hungry",
+            "im hungry",
+            "I'M hungry",
+            "I AM hungry",
+            "IM hungry",
+        ]
+
+        expected_string = f"Hi hungry, I thought you were <@{test_user}>."
+
+        mock_messages = [
+            MockMessage(MockMessageAuthor(test_user), test_string)
+            for test_string in test_strings
+        ]
+
+        for mock_message in mock_messages:
+            with self.subTest(mock_message=mock_message.content):
+                result = DadCog.dadJoke(mock_message)
+                self.assertEqual(result, expected_string)
+
+    def test_word_boundaries_false_positives(self):
+        test_user = "test"
+        
+        test_strings = [
+            "him ",
+            "brim with energy",
+            "sim city ",
+            "swimming ",
+            "dim light",
+            "scam ",
+            "diam ",
+            "William ",
+        ]
+
+        mock_messages = [
+            MockMessage(MockMessageAuthor(test_user), test_string)
+            for test_string in test_strings
+        ]
+
+        for mock_message in mock_messages:
+            with self.subTest(mock_message=mock_message.content):
+                result = DadCog.dadJoke(mock_message)
+                self.assertEqual(result, "")
 
 if __name__ == "__main__":
     unittest.main()

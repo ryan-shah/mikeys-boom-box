@@ -1,4 +1,5 @@
 from discord.ext import commands
+import re
 
 
 class Dad(commands.Cog):
@@ -35,15 +36,15 @@ def getNewName(search, msg):
 
 
 def dadJoke(message):
-    triggers = [f"i{single_quote}m " for single_quote in Dad.SINGLE_QUOTES] + [
-        "i am ",
-        " im ",
-    ]
-    for word in triggers:
-        if word in message.content.lower():
-            name = getNewName(word, message.content)
-            response = (
-                "Hi " + name + ", I thought you were <@" + str(message.author.id) + ">."
-            )
-            return response
+    quotes = "".join(Dad.SINGLE_QUOTES)
+    pattern = re.compile(rf"\b(?:i[{quotes}]m|i am|im)\s+", re.IGNORECASE)
+    match = pattern.search(message.content)
+    
+    if match:
+        trigger = match.group(0).lower()
+        name = getNewName(trigger, message.content)
+        response = (
+            "Hi " + name + ", I thought you were <@" + str(message.author.id) + ">."
+        )
+        return response
     return ""

@@ -26,7 +26,7 @@ Windows/Mac install: See instructions [here](https://www.python.org/)
 5. Install dependencies with `pip3 install -r requirements.txt`
 6. Run the bot with `python3 mikey/mikey.py`
 
-## Commands
+## Features & Commands
 ```
 Mikey's Magical Boombox
 
@@ -48,6 +48,12 @@ Music:
 Type !help command for more info on a command.
 You can also type !help category for more info on a category.
 ```
+
+### Dad Jokes (DadCog)
+Mikey passively listens to messages for variations of "I'm" or "I am". When triggered, Mikey will reply with a classic dad joke format: "Hi `[name]`, I thought you were `<@user_id>`."
+
+### TikTok Downloader (TokCog)
+Mikey passively listens for TikTok URLs (`tiktok.com`) in messages. Whenever a valid TikTok link is detected, Mikey automatically downloads the video (without watermarks) using the RapidAPI service and uploads the `.mp4` directly into the chat.
 
 ## Sources
 - Based on this [example bot](https://gist.github.com/vbe0201/ade9b80f2d3b64643d854938d40a0a2d) by [vbe0201](https://github.com/vbe0201)

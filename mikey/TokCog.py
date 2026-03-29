@@ -14,10 +14,29 @@ temp_filename = "tmp_tok.mp4"
 
 class TikTok(commands.Cog):
     def __init__(self, bot):
+        """        Initialize the class with a bot instance.
+
+        Args:
+            bot: The bot instance to be assigned.
+        """
+
         self.bot = bot
 
     @commands.Cog.listener()
     async def on_message(self, message):
+        """        Process the message and retrieve a TikTok video.
+
+        This function processes the message to extract a TikTok video URL, retrieves the video metadata using an API,
+        downloads the video, and sends it as a reply to the message.
+
+        Args:
+            message (str): The message content received.
+
+
+        Raises:
+            Exception: If there is an error in processing the video.
+        """
+
         if message.author.bot or message.content.startswith("!"):
             return
         if os.path.exists(temp_filename):
